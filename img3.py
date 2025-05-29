@@ -8,8 +8,8 @@ st.set_page_config(page_title="Blend Thai Woman Expressions", layout="centered")
 st.title("🇹🇭 Blend Smiling and Laughing Thai Woman with X-Y Axes")
 
 # 🔗 ภาพผู้หญิงไทยคนเดียวกันในอิริยาบถต่างกัน (จาก Pexels)
-url1 = "https://images.pexels.com/photos/1191510/pexels-photo-1191510.jpeg?auto=compress&cs=tinysrgb&h=400"  # Smiling
-url2 = "https://images.pexels.com/photos/1191521/pexels-photo-1191521.jpeg?auto=compress&cs=tinysrgb&h=400"  # Laughing
+url1 = "https://www.sumupth.com/wp-content/uploads/2024/07/8826-1024x683.jpg"  # Smiling
+url2 = "https://storage-wp.thaipost.net/2022/12/%E0%B8%84%E0%B8%B3-%E0%B8%9C%E0%B8%81%E0%B8%B2.jpg"  # Laughing
 
 # 🔄 blending control
 alpha = st.slider("🔄 Blending Ratio (alpha)", 0.0, 1.0, 0.5, 0.05)
