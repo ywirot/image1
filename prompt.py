@@ -47,9 +47,9 @@ try:
     # --- แสดงภาพพร้อมแกน X-Y ด้วย matplotlib ---
     fig, ax = plt.subplots()
     ax.imshow(resized_image)
-    ax.set_title(f"ขนาด: {scale_percent}%, {flip_option}", fontsize=12)
-    ax.set_xlabel("แกน X (พิกเซล)")
-    ax.set_ylabel("แกน Y (พิกเซล)")
+    ax.set_title(f"size: {scale_percent}%, {flip_option}", fontsize=12)
+    ax.set_xlabel("X (pixel)")
+    ax.set_ylabel("Y (pixel)")
     ax.grid(False)  # ปิดเส้นกริด
 
     st.pyplot(fig)
