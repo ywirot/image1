@@ -35,7 +35,7 @@ for i, (name, url) in enumerate(image_urls.items()):
         try:
             response = requests.get(url, timeout=5)
             img = Image.open(BytesIO(response.content))
-            st.image(img.resize((150, 100)), caption=name, use_column_width=False)
+            st.image(img.resize((150, 100)), caption=name, use_container_width=False)
             if st.button(f"Select {name}"):
                 selected_image_name = name
         except:
