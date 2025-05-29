@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import requests
 from io import BytesIO
+import numpy as np
 
 st.set_page_config(page_title="แสดงรูปภาพ", layout="centered")
 
