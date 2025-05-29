@@ -22,7 +22,7 @@ st.markdown("<h1>🌼 Image Viewer with Thumbnails and Axes</h1>", unsafe_allow_
 image_urls = {
     "Rose": "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg",
     "Sunflower": "https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg",
-    "Lavender": "https://images.pexels.com/photos/580899/pexels-photo-580899.jpeg"
+    "Lavender": "https://d2imf68kp2e9h.cloudfront.net/images/Lavender%201.jpg"
 }
 
 # --- Display thumbnails in columns ---
