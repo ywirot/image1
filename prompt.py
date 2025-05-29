@@ -19,7 +19,7 @@ st.markdown("""
 st.markdown("<h1>🌹 Rosa rubiginosa (กุหลาบป่า)</h1>", unsafe_allow_html=True)
 
 # รูปภาพจาก URL
-image_url = "https://upload.wikimedia.org/wikipedia/commons/b/bf/Bulldog_inglese.jpg"
+image_url = "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg"
 
 try:
     response = requests.get(image_url, timeout=10)
