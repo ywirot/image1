@@ -2,45 +2,46 @@ import streamlit as st
 from PIL import Image
 import requests
 from io import BytesIO
-import easyocr
+import torch
 import matplotlib.pyplot as plt
-import numpy as np
 
-# Streamlit config
-st.set_page_config(page_title="Text Detection with EasyOCR", layout="centered")
-st.title("📖 OCR with EasyOCR (Thai & English)")
+# Streamlit page config
+st.set_page_config(page_title="Object Detection with YOLOv5", layout="centered")
+st.title("🚀 Object Detection using YOLOv5")
 
-# Image URL (you can change or let user upload)
+# Sample image URL (you can replace this or allow upload)
 image_url = "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*v0Bm-HQxWtpbQ0Yq463uqw.jpeg"
 
 # Load image from URL
 response = requests.get(image_url)
 image = Image.open(BytesIO(response.content)).convert("RGB")
-
-# Show original image
 st.image(image, caption="📸 Input Image", use_container_width=True)
 
-# Run EasyOCR
-st.subheader("🔍 Reading text using EasyOCR...")
-reader = easyocr.Reader(['th', 'en'])  # Thai + English
-results = reader.readtext(np.array(image))
+# Load YOLOv5 model (from PyTorch Hub)
+st.subheader("🔍 Detecting objects...")
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
 
-# Display detected text
-st.markdown("### 📝 Detected Text:")
-if results:
-    for bbox, text, conf in results:
-        st.write(f"- **{text}** (Confidence: {conf:.2f})")
+# Perform detection
+results = model(image)
+
+# Filter for specific object classes
+target_classes = {'bus', 'person', 'bicycle'}  # YOLOv5 detects "person" for both man/woman
+df = results.pandas().xyxy[0]
+filtered_df = df[df['name'].isin(target_classes)]
+
+# Display detected objects
+st.markdown("### 📝 Detected Objects")
+if not filtered_df.empty:
+    for label in sorted(filtered_df['name'].unique()):
+        count = filtered_df[filtered_df['name'] == label].shape[0]
+        st.write(f"- **{label.capitalize()}** (× {count})")
 else:
-    st.write("No text found.")
+    st.write("No target objects detected.")
 
-# Show image with bounding boxes using matplotlib
-st.subheader("🖼️ Image with Text Boxes")
+# Display image with bounding boxes
+st.subheader("🖼️ Detection Results with Bounding Boxes")
 fig, ax = plt.subplots()
-ax.imshow(image)
-for bbox, text, conf in results:
-    points = np.array(bbox).astype(int)
-    x, y = points[0]
-    ax.plot(*zip(*(list(points) + [points[0]])), color='red', linewidth=1)
-    ax.text(x, y - 5, text, fontsize=8, color='red', backgroundcolor='white')
-ax.axis('off')
+results.render()  # Draw boxes on results.ims[0]
+ax.imshow(results.ims[0])
+ax.axis("off")
 st.pyplot(fig)
