@@ -1,7 +1,8 @@
 streamlit
 torch==2.0.1
-torchvision
-matplotlib
+torchvision==0.15.2
 Pillow
 requests
+matplotlib
 opencv-python-headless
+numpy
