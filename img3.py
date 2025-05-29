@@ -4,42 +4,42 @@ import requests
 from io import BytesIO
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Blend Two Rose Images with Axes", layout="centered")
-st.title("🌹 Blending Two Rose Images with X-Y Axes")
+st.set_page_config(page_title="Blend Smiling and Laughing Woman", layout="centered")
+st.title("😊 Blend Two Expressions of the Same Woman with X-Y Axes")
 
-# URLs of two rose images (ขนาดต่างกัน)
-url1 = "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg?auto=compress&cs=tinysrgb&h=400"
-url2 = "https://images.pexels.com/photos/1020895/pexels-photo-1020895.jpeg?auto=compress&cs=tinysrgb&h=300"
+# 🔗 URLs ของภาพผู้หญิงคนเดียวกันในสองอิริยาบถ
+url1 = "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&h=400"  # Smiling
+url2 = "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&h=400"  # Laughing and leaning back
 
-# Slider for blending ratio
-alpha = st.slider("🔄 Blending Ratio (alpha)", min_value=0.0, max_value=1.0, value=0.5, step=0.05)
+# 🔄 Slider ปรับค่าการ Blending
+alpha = st.slider("🔄 Blending Ratio (alpha)", 0.0, 1.0, 0.5, 0.05)
 
 try:
-    # Load images
+    # โหลดภาพทั้งสอง
     response1 = requests.get(url1)
     response2 = requests.get(url2)
     img1 = Image.open(BytesIO(response1.content)).convert("RGBA")
     img2 = Image.open(BytesIO(response2.content)).convert("RGBA")
 
-    # Resize img2 to match img1
+    # ปรับขนาดให้เท่ากัน
     img2_resized = img2.resize(img1.size)
 
-    # Blend images
+    # ผสมภาพ
     blended_img = Image.blend(img1, img2_resized, alpha)
 
-    # Display original images
-    st.subheader("🔍 Original Images")
+    # แสดงภาพต้นฉบับ
+    st.subheader("🧍 Original Images")
     col1, col2 = st.columns(2)
     with col1:
-        st.image(img1, caption="Rose Image 1", use_container_width=True)
+        st.image(img1, caption="Smiling Woman", use_container_width=True)
     with col2:
-        st.image(img2_resized, caption="Rose Image 2 (resized)", use_container_width=True)
+        st.image(img2_resized, caption="Laughing Woman (resized)", use_container_width=True)
 
-    # Show blended image with X/Y axes using matplotlib
-    st.subheader("📊 Blended Image with X-Y Axes")
+    # แสดงผลลัพธ์พร้อมแกน X-Y
+    st.subheader("🎨 Blended Result with X-Y Axes")
     fig, ax = plt.subplots()
     ax.imshow(blended_img)
-    ax.set_title(f"Blended (alpha = {alpha})")
+    ax.set_title(f"Blended Image (alpha = {alpha})", fontsize=12)
     ax.set_xlabel("X-axis (pixels)")
     ax.set_ylabel("Y-axis (pixels)")
     ax.grid(False)
