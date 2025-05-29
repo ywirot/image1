@@ -26,7 +26,7 @@ try:
     response.raise_for_status()  # ถ้ามี error เช่น 404 จะ throw exception
     image = Image.open(BytesIO(response.content)).convert("RGB")
     image = np.array(image)
-    st.image(image, caption="ภาพจาก Wikimedia Commons", use_column_width="always")
+    st.image(image, caption="ภาพจาก Wikimedia Commons", use_container_width ="always")
     st.markdown('<p class="caption">กุหลาบป่าจากยุโรป 🌿</p>', unsafe_allow_html=True)
 
 except requests.exceptions.RequestException as e:
