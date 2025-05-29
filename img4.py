@@ -2,41 +2,42 @@ import streamlit as st
 from PIL import Image
 import requests
 from io import BytesIO
-import torch
+import easyocr
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Animal Detection", layout="centered")
-st.title("🦒🕊️ Animal Detection: Elephant, Horse, Giraffe, Bird")
+st.set_page_config(page_title="Text Detection with EasyOCR", layout="centered")
+st.title("📖 OCR with EasyOCR (Thai & English)")
 
-# ✅ ใช้ภาพที่มีสัตว์หลายชนิด
-image_url = "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*v0Bm-HQxWtpbQ0Yq463uqw.jpeg"
-
-# โหลดภาพ
+# โหลดภาพจาก URL หรืออัปโหลด
+image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Thai_text_sample.jpg/800px-Thai_text_sample.jpg"
 response = requests.get(image_url)
 image = Image.open(BytesIO(response.content)).convert("RGB")
-st.image(image, caption="Wildlife Image: Elephant, Giraffe, Zebra, Birds", use_container_width=True)
 
-# โหลดโมเดล YOLOv5 จาก PyTorch Hub
-st.subheader("🔍 Running YOLOv5 Object Detection...")
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
+st.image(image, caption="📸 Input Image", use_container_width=True)
 
-# ตรวจจับวัตถุ
-results = model(image)
+# โหลดโมเดล OCR
+st.subheader("🔍 Reading text...")
+reader = easyocr.Reader(['th', 'en'])  # รองรับภาษาไทยและอังกฤษ
+
+# แปลงภาพเป็นข้อมูล OCR
+results = reader.readtext(np.array(image))
 
 # แสดงผลลัพธ์
-labels = results.pandas().xyxy[0]['name'].tolist()
-st.markdown("### 📝 Detected Objects:")
-if labels:
-    for label in sorted(set(labels)):
-        count = labels.count(label)
-        st.write(f"- {label} (x{count})")
+st.markdown("### 📝 Detected Text:")
+if results:
+    for bbox, text, conf in results:
+        st.write(f"- **{text}** (Confidence: {conf:.2f})")
 else:
-    st.write("No animals detected.")
+    st.write("ไม่พบข้อความในภาพ")
 
-# แสดงภาพพร้อม bounding boxes
-st.markdown("### 🖼️ Image with Bounding Boxes")
+# แสดงภาพพร้อมกรอบข้อความ
+st.subheader("🖼️ Text Boxes")
 fig, ax = plt.subplots()
-results.render()
-ax.imshow(results.ims[0])
+ax.imshow(image)
+for bbox, text, conf in results:
+    (top_left, top_right, bottom_right, bottom_left) = bbox
+    x, y = top_left
+    ax.plot([p[0] for p in bbox] + [bbox[0][0]], [p[1] for p in bbox] + [bbox[0][1]], 'r-')
+    ax.text(x, y - 5, text, fontsize=8, color='red')
 ax.axis('off')
 st.pyplot(fig)
