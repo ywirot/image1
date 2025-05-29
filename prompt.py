@@ -44,6 +44,18 @@ try:
     new_height = int(height * scale_percent / 100)
     resized_image = image.resize((new_width, new_height))
 
-    # --- แสดงภาพผ่าน matplotlib พร้อมแกน X-Y ---
+    # --- แสดงภาพพร้อมแกน X-Y ด้วย matplotlib ---
     fig, ax = plt.subplots()
-    ax.im
+    ax.imshow(resized_image)
+    ax.set_title(f"ขนาด: {scale_percent}%, {flip_option}", fontsize=12)
+    ax.set_xlabel("แกน X (พิกเซล)")
+    ax.set_ylabel("แกน Y (พิกเซล)")
+    ax.grid(False)  # ปิดเส้นกริด
+
+    st.pyplot(fig)
+
+    st.markdown('<p class="caption">ภาพจาก Pexels - กุหลาบป่าสีชมพู พร้อมแกน X-Y 🌿</p>', unsafe_allow_html=True)
+
+except requests.exceptions.RequestException as e:
+    st.error("❌ ไม่สามารถโหลดรูปภาพจาก URL ได้")
+    st.code(str(e), language="python")
