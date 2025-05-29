@@ -9,7 +9,7 @@ st.set_page_config(page_title="Animal Detection", layout="centered")
 st.title("🦒🕊️ Animal Detection: Elephant, Horse, Giraffe, Bird")
 
 # ✅ ใช้ภาพที่มีสัตว์หลายชนิด
-image_url = "https://images.unsplash.com/photo-1600185365483-26d7e57a7d37?auto=compress&cs=tinysrgb&h=640"
+image_url = "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*v0Bm-HQxWtpbQ0Yq463uqw.jpeg"
 
 # โหลดภาพ
 response = requests.get(image_url)
