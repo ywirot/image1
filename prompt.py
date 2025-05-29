@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Image Viewer", layout="centered")
 
-# --- Custom CSS ---
 st.markdown("""
     <style>
         .main { background-color: #fdf6f0; color: #333; }
@@ -16,52 +15,70 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Title ---
-st.markdown("<h1>🌹 Image Viewer with X-Y Axes</h1>", unsafe_allow_html=True)
+st.markdown("<h1>🌼 Image Viewer with Thumbnails and Axes</h1>", unsafe_allow_html=True)
 
-# --- Image Options ---
-image_options = {
+# --- Image URLs ---
+image_urls = {
     "Rose": "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg",
     "Sunflower": "https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg",
-    "Lavender": "https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg"  # ใส่ลิงก์ใหม่ได้
+    "Lavender": "https://images.pexels.com/photos/580899/pexels-photo-580899.jpeg"
 }
 
-# --- User Input ---
-selected_image_name = st.selectbox("📸 Select an image:", list(image_options.keys()))
-image_url = image_options[selected_image_name]
+# --- Display thumbnails in columns ---
+st.markdown("### Select an image:")
 
-scale_percent = st.slider("🔧 Resize Image (%)", min_value=10, max_value=200, value=100, step=10)
+cols = st.columns(3)
+selected_image_name = None
+
+for i, (name, url) in enumerate(image_urls.items()):
+    with cols[i]:
+        try:
+            response = requests.get(url, timeout=5)
+            img = Image.open(BytesIO(response.content))
+            st.image(img.resize((150, 100)), caption=name, use_column_width=False)
+            if st.button(f"Select {name}"):
+                selected_image_name = name
+        except:
+            st.warning(f"⚠️ Failed to load thumbnail for {name}")
+
+# --- Default selection if not clicked ---
+if selected_image_name is None:
+    selected_image_name = list(image_urls.keys())[0]
+
+# --- User Controls ---
+scale_percent = st.slider("🔧 Resize Image (%)", 10, 200, 100, 10)
 flip_option = st.radio("🔁 Flip Image", ("No Flip", "Flip Horizontally", "Flip Vertically"))
 
-# --- Load and Display Image ---
+# --- Load Selected Image ---
 try:
-    response = requests.get(image_url, timeout=10)
+    selected_url = image_urls[selected_image_name]
+    response = requests.get(selected_url, timeout=10)
     response.raise_for_status()
-
     image = Image.open(BytesIO(response.content)).convert("RGB")
 
-    # --- Flip ---
+    # Flip
     if flip_option == "Flip Horizontally":
         image = ImageOps.mirror(image)
     elif flip_option == "Flip Vertically":
         image = ImageOps.flip(image)
 
-    # --- Resize ---
+    # Resize
     width, height = image.size
     new_size = (int(width * scale_percent / 100), int(height * scale_percent / 100))
-    image_resized = image.resize(new_size)
+    resized_image = image.resize(new_size)
 
-    # --- Display with Axes ---
+    # Display with matplotlib
+    st.markdown(f"### Displaying: **{selected_image_name}**")
     fig, ax = plt.subplots()
-    ax.imshow(image_resized)
+    ax.imshow(resized_image)
     ax.set_title(f"{selected_image_name} | Size: {scale_percent}% | {flip_option}")
     ax.set_xlabel("X-axis (pixels)")
     ax.set_ylabel("Y-axis (pixels)")
     ax.grid(False)
-
     st.pyplot(fig)
 
     st.markdown(f'<p class="caption">Image: {selected_image_name} from Pexels</p>', unsafe_allow_html=True)
 
-except requests.exceptions.RequestException as e:
-    st.error("❌ Failed to load image.")
+except Exception as e:
+    st.error("❌ Failed to load selected image.")
     st.code(str(e), language="python")
