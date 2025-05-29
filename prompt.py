@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Image Viewer", layout="centered")
 
+# --- Custom CSS ---
 st.markdown("""
     <style>
         .main { background-color: #fdf6f0; color: #333; }
@@ -28,7 +29,7 @@ image_urls = {
 st.markdown("### Select an image:")
 
 cols = st.columns(3)
-selected_image_name = None
+selected_image_name = st.session_state.get("selected_image_name", None)
 
 for i, (name, url) in enumerate(image_urls.items()):
     with cols[i]:
@@ -36,38 +37,40 @@ for i, (name, url) in enumerate(image_urls.items()):
             response = requests.get(url, timeout=5)
             img = Image.open(BytesIO(response.content))
             st.image(img.resize((150, 100)), caption=name, use_container_width=False)
-            if st.button(f"Select {name}"):
+            if st.button(f"Select {name}", key=f"btn_{name}"):
                 selected_image_name = name
+                st.session_state["selected_image_name"] = name
         except:
             st.warning(f"⚠️ Failed to load thumbnail for {name}")
 
-# --- Default selection if not clicked ---
+# --- Default selection if no button clicked ---
 if selected_image_name is None:
     selected_image_name = list(image_urls.keys())[0]
+    st.session_state["selected_image_name"] = selected_image_name
 
 # --- User Controls ---
 scale_percent = st.slider("🔧 Resize Image (%)", 10, 200, 100, 10)
 flip_option = st.radio("🔁 Flip Image", ("No Flip", "Flip Horizontally", "Flip Vertically"))
 
-# --- Load Selected Image ---
+# --- Load and Display Selected Image ---
 try:
     selected_url = image_urls[selected_image_name]
     response = requests.get(selected_url, timeout=10)
     response.raise_for_status()
     image = Image.open(BytesIO(response.content)).convert("RGB")
 
-    # Flip
+    # --- Flip ---
     if flip_option == "Flip Horizontally":
         image = ImageOps.mirror(image)
     elif flip_option == "Flip Vertically":
         image = ImageOps.flip(image)
 
-    # Resize
+    # --- Resize ---
     width, height = image.size
     new_size = (int(width * scale_percent / 100), int(height * scale_percent / 100))
     resized_image = image.resize(new_size)
 
-    # Display with matplotlib
+    # --- Display with matplotlib (with X/Y axes) ---
     st.markdown(f"### Displaying: **{selected_image_name}**")
     fig, ax = plt.subplots()
     ax.imshow(resized_image)
