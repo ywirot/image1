@@ -4,7 +4,7 @@ import requests
 from io import BytesIO
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="แสดงรูปภาพพร้อมแกน", layout="centered")
+st.set_page_config(page_title="Display Image with Axes", layout="centered")
 
 # --- Custom CSS ---
 st.markdown("""
@@ -16,46 +16,46 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Title ---
-st.markdown("<h1>🌹 Rosa rubiginosa (กุหลาบป่า)</h1>", unsafe_allow_html=True)
+st.markdown("<h1>🌹 Rosa rubiginosa (Sweet Briar Rose)</h1>", unsafe_allow_html=True)
 
-# --- รูปภาพจาก URL ---
+# --- Image URL ---
 image_url = "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg"
 
-# --- ควบคุมการแสดงผลโดยผู้ใช้ ---
-scale_percent = st.slider("🔧 ปรับขนาดภาพ (%)", min_value=10, max_value=200, value=100, step=10)
-flip_option = st.radio("🔁 ต้องการพลิกภาพหรือไม่?", ("None", "Flip Horizontal", "Flip Vertical"))
+# --- User Controls ---
+scale_percent = st.slider("🔧 Resize Image (%)", min_value=10, max_value=200, value=100, step=10)
+flip_option = st.radio("🔁 Flip Image", ("No Flip", "Flip Horizontally", "Flip Vertically"))
 
-# --- โหลดและแสดงภาพ ---
+# --- Load and Display Image ---
 try:
     response = requests.get(image_url, timeout=10)
     response.raise_for_status()
 
     image = Image.open(BytesIO(response.content)).convert("RGB")
 
-    # --- Flip ภาพตามที่เลือก ---
-    if flip_option == "Flip แนวนอน":
+    # --- Flip Image ---
+    if flip_option == "Flip Horizontally":
         image = ImageOps.mirror(image)
-    elif flip_option == "Flip แนวตั้ง":
+    elif flip_option == "Flip Vertically":
         image = ImageOps.flip(image)
 
-    # --- Resize ภาพ ---
+    # --- Resize Image ---
     width, height = image.size
     new_width = int(width * scale_percent / 100)
     new_height = int(height * scale_percent / 100)
     resized_image = image.resize((new_width, new_height))
 
-    # --- แสดงภาพพร้อมแกน X-Y ด้วย matplotlib ---
+    # --- Display Image with Axes using Matplotlib ---
     fig, ax = plt.subplots()
     ax.imshow(resized_image)
-    ax.set_title(f"size: {scale_percent}%, {flip_option}", fontsize=12)
-    ax.set_xlabel("X (pixel)")
-    ax.set_ylabel("Y (pixel)")
-    ax.grid(False)  # ปิดเส้นกริด
+    ax.set_title(f"Size: {scale_percent}% - {flip_option}", fontsize=12)
+    ax.set_xlabel("X-axis (pixels)")
+    ax.set_ylabel("Y-axis (pixels)")
+    ax.grid(False)
 
     st.pyplot(fig)
 
-    st.markdown('<p class="caption">ภาพจาก Pexels - กุหลาบป่าสีชมพู พร้อมแกน X-Y 🌿</p>', unsafe_allow_html=True)
+    st.markdown('<p class="caption">Image source: Pexels | Sweet Briar Rose with X-Y axes 🌿</p>', unsafe_allow_html=True)
 
 except requests.exceptions.RequestException as e:
-    st.error("❌ ไม่สามารถโหลดรูปภาพจาก URL ได้")
+    st.error("❌ Failed to load image from URL.")
     st.code(str(e), language="python")
