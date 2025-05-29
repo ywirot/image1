@@ -1,3 +1,4 @@
+easyocr @ git+https://github.com/JaidedAI/EasyOCR
 streamlit
 torch
 torchvision
