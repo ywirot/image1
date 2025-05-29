@@ -4,7 +4,7 @@ import requests
 from io import BytesIO
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Display Image with Axes", layout="centered")
+st.set_page_config(page_title="Image Viewer", layout="centered")
 
 # --- Custom CSS ---
 st.markdown("""
@@ -16,12 +16,19 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Title ---
-st.markdown("<h1>🌹 Rosa rubiginosa (Sweet Briar Rose)</h1>", unsafe_allow_html=True)
+st.markdown("<h1>🌹 Image Viewer with X-Y Axes</h1>", unsafe_allow_html=True)
 
-# --- Image URL ---
-image_url = "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg"
+# --- Image Options ---
+image_options = {
+    "Rose": "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg",
+    "Sunflower": "https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg",
+    "Lavender": "https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg"  # ใส่ลิงก์ใหม่ได้
+}
 
-# --- User Controls ---
+# --- User Input ---
+selected_image_name = st.selectbox("📸 Select an image:", list(image_options.keys()))
+image_url = image_options[selected_image_name]
+
 scale_percent = st.slider("🔧 Resize Image (%)", min_value=10, max_value=200, value=100, step=10)
 flip_option = st.radio("🔁 Flip Image", ("No Flip", "Flip Horizontally", "Flip Vertically"))
 
@@ -32,30 +39,29 @@ try:
 
     image = Image.open(BytesIO(response.content)).convert("RGB")
 
-    # --- Flip Image ---
+    # --- Flip ---
     if flip_option == "Flip Horizontally":
         image = ImageOps.mirror(image)
     elif flip_option == "Flip Vertically":
         image = ImageOps.flip(image)
 
-    # --- Resize Image ---
+    # --- Resize ---
     width, height = image.size
-    new_width = int(width * scale_percent / 100)
-    new_height = int(height * scale_percent / 100)
-    resized_image = image.resize((new_width, new_height))
+    new_size = (int(width * scale_percent / 100), int(height * scale_percent / 100))
+    image_resized = image.resize(new_size)
 
-    # --- Display Image with Axes using Matplotlib ---
+    # --- Display with Axes ---
     fig, ax = plt.subplots()
-    ax.imshow(resized_image)
-    ax.set_title(f"Size: {scale_percent}% - {flip_option}", fontsize=12)
+    ax.imshow(image_resized)
+    ax.set_title(f"{selected_image_name} | Size: {scale_percent}% | {flip_option}")
     ax.set_xlabel("X-axis (pixels)")
     ax.set_ylabel("Y-axis (pixels)")
     ax.grid(False)
 
     st.pyplot(fig)
 
-    st.markdown('<p class="caption">Image source: Pexels | Sweet Briar Rose with X-Y axes 🌿</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="caption">Image: {selected_image_name} from Pexels</p>', unsafe_allow_html=True)
 
 except requests.exceptions.RequestException as e:
-    st.error("❌ Failed to load image from URL.")
+    st.error("❌ Failed to load image.")
     st.code(str(e), language="python")
