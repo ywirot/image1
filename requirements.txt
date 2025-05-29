@@ -6,3 +6,5 @@ Pillow
 matplotlib
 requests
 numpy
+easyocr @ git+https://github.com/JaidedAI/EasyOCR
+opencv-python-headless
