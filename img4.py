@@ -5,44 +5,45 @@ from io import BytesIO
 import torch
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Object Detection (Bus, People, Bike, Tree)", layout="centered")
-st.title("🚀 Object Detection: Bus, Person, Bike, Tree")
+# Streamlit page setup
+st.set_page_config(page_title="Object Detection: Bus, Person, Bicycle", layout="centered")
+st.title("🚀 Object Detection: Bus, Person, Bicycle")
 
-# 🔗 ภาพตัวอย่างที่มีวัตถุหลากหลาย
-image_url = "https://images.pexels.com/photos/3803835/pexels-photo-3803835.jpeg?auto=compress&cs=tinysrgb&h=640"
+# Image URL (contains multiple objects)
+image_url = "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*v0Bm-HQxWtpbQ0Yq463uqw.jpeg"
 
-# โหลดภาพจาก URL
+# Load image from URL
 response = requests.get(image_url)
 image = Image.open(BytesIO(response.content)).convert("RGB")
 
+# Show original image
 st.image(image, caption="📸 Input Image", use_container_width=True)
 
-# โหลด YOLOv5 model (ใช้ yolov5s ที่เบาและเร็ว)
+# Load YOLOv5s model
 st.subheader("🔍 Detecting objects...")
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
 
-# ตรวจจับวัตถุ
+# Run object detection
 results = model(image)
 
-# กรองเฉพาะวัตถุที่ต้องการ
-allowed_classes = {'bus', 'person', 'bicycle'}  # YOLOv5 ใช้ 'person', 'bicycle' แทน man/woman/bike
-
+# Filter results for specific classes
+target_classes = {'bus', 'person', 'bicycle'}
 df = results.pandas().xyxy[0]
-filtered_df = df[df['name'].isin(allowed_classes)]
+filtered_df = df[df['name'].isin(target_classes)]
 
-# แสดงรายการวัตถุที่ตรวจพบ
-st.markdown("### 📝 Detected Objects:")
+# Display detected objects
+st.markdown("### 📝 Detected Objects")
 if not filtered_df.empty:
     for label in sorted(filtered_df['name'].unique()):
         count = filtered_df[filtered_df['name'] == label].shape[0]
-        st.write(f"- {label} (x{count})")
+        st.write(f"- **{label.capitalize()}** (× {count})")
 else:
-    st.write("No target objects (bus, person, bicycle) found.")
+    st.write("No target objects (bus, person, bicycle) were detected.")
 
-# แสดงภาพพร้อม Bounding Boxes
-st.subheader("🖼️ Detection with Bounding Boxes")
+# Show image with bounding boxes
+st.subheader("🖼️ Detection Results with Bounding Boxes")
 fig, ax = plt.subplots()
 results.render()
 ax.imshow(results.ims[0])
-ax.axis('off')
+ax.axis("off")
 st.pyplot(fig)
