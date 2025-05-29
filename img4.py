@@ -11,7 +11,7 @@ st.set_page_config(page_title="Text Detection with EasyOCR", layout="centered")
 st.title("📖 OCR with EasyOCR (Thai & English)")
 
 # Image URL (you can change or let user upload)
-image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Thai_text_sample.jpg/800px-Thai_text_sample.jpg"
+image_url = "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*v0Bm-HQxWtpbQ0Yq463uqw.jpeg"
 
 # Load image from URL
 response = requests.get(image_url)
