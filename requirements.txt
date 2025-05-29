@@ -1,7 +1,7 @@
-easyocr @ git+https://github.com/JaidedAI/EasyOCR
 streamlit
 torch
 torchvision
-Pillow
 matplotlib
+Pillow
 requests
+opencv-python-headless
