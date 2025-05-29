@@ -1,5 +1,6 @@
 streamlit
-scikit-image>=0.19.3
+torch
+torchvision
+Pillow
 matplotlib
-pillow
 requests
