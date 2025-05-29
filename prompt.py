@@ -21,12 +21,22 @@ st.markdown("<h1>🌹 Rosa rubiginosa (กุหลาบป่า)</h1>", unsaf
 # รูปภาพจาก URL
 image_url = "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg"
 
+# ตัวปรับขนาดภาพ
+scale_percent = st.slider("ปรับขนาดภาพ (%):", min_value=10, max_value=200, value=100, step=10)
+
 try:
     response = requests.get(image_url, timeout=10)
-    response.raise_for_status()  # ถ้ามี error เช่น 404 จะ throw exception
+    response.raise_for_status()
     image = Image.open(BytesIO(response.content)).convert("RGB")
-    image = np.array(image)
-    st.image(image, caption="ภาพจาก Wikimedia Commons", use_container_width ="always")
+
+    # ปรับขนาดภาพ
+    width, height = image.size
+    new_width = int(width * scale_percent / 100)
+    new_height = int(height * scale_percent / 100)
+    resized_image = image.resize((new_width, new_height))
+
+    # แสดงภาพ
+    st.image(resized_image, caption="ภาพจาก Pexels.com", use_container_width=False)
     st.markdown('<p class="caption">กุหลาบป่าจากยุโรป 🌿</p>', unsafe_allow_html=True)
 
 except requests.exceptions.RequestException as e:
