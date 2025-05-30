@@ -1,5 +1,6 @@
 streamlit==1.44.0
-pillow==11.1.0
+#pillow==11.1.0
+Pillow
 #tensorflow==2.19.0
 matplotlib==3.10.1
 #easycor==1.7.2
